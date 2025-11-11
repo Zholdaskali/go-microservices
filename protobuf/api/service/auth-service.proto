@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "api/service/messages.proto";
+
+package auth;
+
+option go_package = "github.com/Zholdaskali/go-microservices/protobuf/api/service/auth";
+
+service AuthService {
+  rpc ValidateToken(TokenRequest) returns (TokenResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (LoginResponse);
+}
