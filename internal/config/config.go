@@ -43,6 +43,40 @@ func LoadConfigDev() *Config {
 	}
 }
 
+// ! Стоит конфиг дев надо заменить
+func LoadConfigTest() *Config {
+	_ = godotenv.Load()
+
+	return &Config{
+		DatabaseURL:        getEnv("DATABASE_URL", "postgres://postgres:erke@localhost:5432/auth_service?sslmode=disable"),
+		Port:               getEnvAsInt("PORT", 8080),
+		GRPCPort:           getEnv("GRPC_PORT", "50051"),
+		LogLevel:           getEnv("LOG_LEVEL", "info"),
+		APIKey:             getEnv("API_KEY", ""),
+		JWTSecret:          getEnv("JWT_ACCESS_SECRET", "your-access-secret-key-here"),
+		JWTRefreshSecret:   getEnv("JWT_REFRESH_SECRET", "your-refresh-secret-key-here"),
+		AccessTokenExpiry:  getEnvAsDuration("ACCESS_TOKEN_EXPIRY", 15*time.Minute),
+		RefreshTokenExpiry: getEnvAsDuration("REFRESH_TOKEN_EXPIRY", 168*time.Hour), // 7 days
+	}
+}
+
+// ! Стоит конфиг дев надо заменить
+func LoadConfigProd() *Config {
+	_ = godotenv.Load()
+
+	return &Config{
+		DatabaseURL:        getEnv("DATABASE_URL", "postgres://postgres:erke@localhost:5432/auth_service?sslmode=disable"),
+		Port:               getEnvAsInt("PORT", 8080),
+		GRPCPort:           getEnv("GRPC_PORT", "50051"),
+		LogLevel:           getEnv("LOG_LEVEL", "info"),
+		APIKey:             getEnv("API_KEY", ""),
+		JWTSecret:          getEnv("JWT_ACCESS_SECRET", "your-access-secret-key-here"),
+		JWTRefreshSecret:   getEnv("JWT_REFRESH_SECRET", "your-refresh-secret-key-here"),
+		AccessTokenExpiry:  getEnvAsDuration("ACCESS_TOKEN_EXPIRY", 15*time.Minute),
+		RefreshTokenExpiry: getEnvAsDuration("REFRESH_TOKEN_EXPIRY", 168*time.Hour), // 7 days
+	}
+}
+
 // Добавьте метод для duration
 func getEnvAsDuration(key string, defaultValue time.Duration) time.Duration {
 	valueStr := getEnv(key, "")
