@@ -16,21 +16,23 @@ var (
 	ErrUserNotFound       = errors.New("user not found")
 	ErrPasswordBad        = errors.New("basd")
 	ErrBadToken           = errors.New("asdasd")
-	ErrInvalidCredentials = errors.New("")
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrUserAlreadyExists  = errors.New("user already exists")
+	ErrTokenGeneration    = errors.New("token generation failed")
 )
 
-type AuthService struct {
-	UserRepo   repository.UserRepository
-	jwtManager *jwt.Manager
+type authService struct {
+	userRepo   repository.UserRepository
+	jwtManager jwt.TokenManager
 	log        logger.Logger
 	pb.UnimplementedAuthServiceServer
 }
 
-func NewAuthService(UserRepo repository.UserRepository, jwtManager *jwt.Manager, log logger.Logger) *AuthService {
-	return &AuthService{
-		UserRepo:   UserRepo,
+func NewAuthService(UserRepo repository.UserRepository, jwtManager jwt.TokenManager, log logger.Logger) AuthService {
+	return &authService{
+		userRepo:   UserRepo,
 		jwtManager: jwtManager,
-		log:        log.With(logger.F("layer", "repository"), logger.F("component", "user_repository")),
+		log:        log.With(logger.F("layer", "service"), logger.F("component", "user_service")),
 	}
 }
 
@@ -41,11 +43,17 @@ func NewAuthService(UserRepo repository.UserRepository, jwtManager *jwt.Manager,
 // Create_at    time.Time `json:"create_at" db:"create_at"`
 // Update_at    time.Time `json:"update_at" db:"update_at"`
 
-func (s *AuthService) Register(ctx context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+func (s *authService) Register(ctx context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 
 	username := registerRequest.UserName
 	email := registerRequest.Email
 	password := registerRequest.Password
+
+	existingUser, err := s.userRepo.GetByEmail(ctx, email)
+
+	if existingUser != nil && err == nil {
+		return nil, ErrUserAlreadyExists
+	}
 
 	if username == "" || email == "" || password == "" {
 		return nil, ErrBadRequest
@@ -63,14 +71,14 @@ func (s *AuthService) Register(ctx context.Context, registerRequest *pb.Register
 		PasswordHash: passwordHash,
 	}
 
-	s.UserRepo.Create(ctx, user)
+	s.userRepo.Create(ctx, user)
 
 	return &pb.RegisterResponse{
 		UserId: user.ID.String(),
 	}, nil
 }
 
-func (s *AuthService) Login(ctx context.Context, loginRequest *pb.LoginRequest) (*pb.LoginResponse, error) {
+func (s *authService) Login(ctx context.Context, loginRequest *pb.LoginRequest) (*pb.LoginResponse, error) {
 	email := loginRequest.Email
 	pass := loginRequest.Password
 
@@ -78,7 +86,7 @@ func (s *AuthService) Login(ctx context.Context, loginRequest *pb.LoginRequest) 
 		return nil, ErrBadRequest
 	}
 
-	user, err := s.UserRepo.GetByEmail(ctx, loginRequest.Email)
+	user, err := s.userRepo.GetByEmail(ctx, loginRequest.Email)
 	if err != nil {
 		return nil, ErrUserNotFound
 	}

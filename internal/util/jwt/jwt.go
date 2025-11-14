@@ -98,3 +98,47 @@ func (m *Manager) generateRefreshToken(userID, email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(m.config.RefreshTokenSecret))
 }
+
+// ValidateAccessToken проверяет access token
+func (m *Manager) ValidateAccessToken(tokenString string) (*Claims, error) {
+	return m.validateToken(tokenString, m.config.AccessTokenSecret)
+}
+
+// ValidateRefreshToken проверяет refresh token
+func (m *Manager) ValidateRefreshToken(tokenString string) (*Claims, error) {
+	return m.validateToken(tokenString, m.config.RefreshTokenSecret)
+}
+
+// validateToken общая функция валидации
+func (m *Manager) validateToken(tokenString, secret string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, ErrExpiredToken
+		}
+		return nil, ErrInvalidToken
+	}
+
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		return nil, ErrInvalidToken
+	}
+
+	return claims, nil
+}
+
+// RefreshTokens обновляет пару токенов
+func (m *Manager) RefreshTokens(refreshToken string) (*TokenPair, error) {
+	claims, err := m.ValidateRefreshToken(refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return m.GenerateTokens(claims.UserID, claims.Email)
+}

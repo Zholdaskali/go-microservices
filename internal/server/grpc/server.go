@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"auth-service/internal/handler/grpchandler"
+	"auth-service/internal/handler"
 	"auth-service/internal/logger"
 	pb "auth-service/pkg/api/service"
 	"net"
@@ -14,7 +14,7 @@ type Server struct {
 	log    logger.Logger
 }
 
-func NewServer(authHandler *grpchandler.AuthHandler, log logger.Logger) *Server {
+func NewServer(authHandler handler.AuthHandler, log logger.Logger) *Server {
 	grpcServer := grpc.NewServer()
 	pb.RegisterAuthServiceServer(grpcServer, authHandler)
 

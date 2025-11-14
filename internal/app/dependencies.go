@@ -3,6 +3,7 @@ package app
 import (
 	"auth-service/internal/config"
 	"auth-service/internal/database"
+	"auth-service/internal/handler"
 	"auth-service/internal/handler/grpchandler"
 	"auth-service/internal/logger"
 	"auth-service/internal/repository"
@@ -17,10 +18,10 @@ import (
 // Dependencies контейнер зависимостей
 type Dependencies struct {
 	DB          *sqlx.DB
-	JWTManager  *jwt.Manager
+	JWTManager  jwt.TokenManager
 	UserRepo    repository.UserRepository
-	AuthService *service.AuthService
-	AuthHandler *grpchandler.AuthHandler
+	AuthService service.AuthService
+	AuthHandler handler.AuthHandler
 }
 
 // NewDependencies создает все зависимости в правильном порядке
