@@ -5,7 +5,8 @@ import (
 
 	"auth-service/internal/logger"
 	"auth-service/internal/service"
-	pb "auth-service/pkg/api/service"
+	pb "github.com/Zholdaskali/go-microservices-proto/pkg/api/auth-service"
+
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

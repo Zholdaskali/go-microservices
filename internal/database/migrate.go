@@ -1,4 +1,3 @@
-// internal/database/migrate.go
 package database
 
 import (
@@ -64,6 +63,7 @@ func GetMigrationVersion(databaseURL string) (uint, bool, error) {
 		databaseURL,
 	)
 	if err != nil {
+		log.Fatal("Failed to create migrate instance:", err)
 		return 0, false, err
 	}
 	defer m.Close()

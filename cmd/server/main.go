@@ -33,7 +33,8 @@ func mustMode() string {
 	flag.Parse()
 
 	if *mode == "" { // ← ПРАВИЛЬНАЯ ПРОВЕРКА!
-		log.Fatal("launch mode is not specified")
+		fmt.Println("No mode specified, defaulting to 'dev'")
+		return "dev"
 	}
 
 	return *mode

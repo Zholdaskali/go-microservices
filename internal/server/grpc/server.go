@@ -3,7 +3,7 @@ package grpc
 import (
 	"auth-service/internal/handler"
 	"auth-service/internal/logger"
-	pb "auth-service/pkg/api/service"
+	pb "github.com/Zholdaskali/go-microservices-proto/pkg/api/auth-service"
 	"net"
 
 	"google.golang.org/grpc"

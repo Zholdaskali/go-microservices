@@ -6,9 +6,10 @@ import (
 	"auth-service/internal/repository"
 	"auth-service/internal/util/bcrypt"
 	"auth-service/internal/util/jwt"
-	pb "auth-service/pkg/api/service"
 	"context"
 	"errors"
+
+	pb "github.com/Zholdaskali/go-microservices-proto/pkg/api/auth-service"
 )
 
 var (

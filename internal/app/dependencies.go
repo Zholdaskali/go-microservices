@@ -10,6 +10,7 @@ import (
 	"auth-service/internal/repository/postgres"
 	"auth-service/internal/service"
 	"auth-service/internal/util/jwt"
+	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -55,6 +56,7 @@ func (d *Dependencies) initDatabase(cfg *config.Config, log logger.Logger) error
 	// Создаем подключение
 	db, err := sqlx.Connect("postgres", cfg.DatabaseURL)
 	if err != nil {
+		log.Error("Fatal error connect ")
 		return err
 	}
 
@@ -73,6 +75,7 @@ func (d *Dependencies) initDatabase(cfg *config.Config, log logger.Logger) error
 	// Применяем миграции ЧЕРЕЗ СУЩЕСТВУЮЩЕЕ ПОДКЛЮЧЕНИЕ
 	log.Info("Applying database migrations...")
 	if err := database.MigrateUp(cfg.DatabaseURL); err != nil {
+		fmt.Println("Ошибка миграции: ", err)
 		return err
 	}
 	log.Info("Database migrations applied successfully")

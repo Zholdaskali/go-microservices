@@ -4,6 +4,7 @@ import (
 	"auth-service/internal/config"
 	"auth-service/internal/logger"
 	grpcserver "auth-service/internal/server/grpc" // единый алиас
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -46,6 +47,7 @@ func (a *App) initConfig(mode string) error {
 	case "test":
 		a.config = config.LoadConfigTest()
 	default:
+		fmt.Println("Подставлен дефолтные env данные")
 		a.config = config.LoadConfigDev()
 	}
 	return nil

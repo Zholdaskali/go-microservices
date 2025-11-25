@@ -1,7 +1,7 @@
 package handler
 
 import (
-	pb "auth-service/pkg/api/service"
+	pb "github.com/Zholdaskali/go-microservices-proto/pkg/api/auth-service"
 )
 
 type AuthHandler interface {
